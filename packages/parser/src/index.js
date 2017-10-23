@@ -2,7 +2,7 @@ import Frame from '../../frame/src/index';
 
 const locExpression = /\(?(.+?)(?:\:(\d+))?(?:\:(\d+))?\)?$/;
 const chromeFrame = /^\s*at\s.+(:\d+)/;
-const firefoxFrame = /(^|@)\S+\:\d+/;
+const firefoxFrame = /(^|@)\S+\:\d+|.+line\s+\d+\s+>\s+eval.+/;
 
 const extractLocation = token => locExpression.exec(token).slice(1).map(item => {
 	const place = Number(item);
@@ -20,13 +20,24 @@ const parseStack = stack => {
 		)
 		.map(e => {
 			if (firefoxFrame.test(e)) {
+				// strip eval
+				let isEval = false;
+				if (e.indexOf(' > eval') > -1) {
+					e = e.replace(
+						/ line (\d+)(?: > eval line \d+)* > eval\:\d+\:\d+/g, ':$1'
+					);
+					isEval = true;
+				}
 				const data = e.split(/[@]/g);
 				const last = data.pop();
 				return new Frame(
-					data.join('@') || undefined,
+					data.join('@') || (isEval ? 'eval' : undefined),
 					...extractLocation(last)
 				);
 			} else {
+				if (e.indexOf('(eval ') !== -1) {
+					e = e.replace(/(\(eval at [^\()]*)|(\)\,.*$)/g, '';)
+				}
 				const data = e
 					.trim()
 					.split(/\s+/g)
