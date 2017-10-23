@@ -6,7 +6,7 @@ const map = async (frames, fileUri, fileContents) => {
 	return await Promise.all(
 		frames.map(async frame => {
 			const { functionName, fileName, lineNumber, columnNumber } = frame;
-			let { map, fileSource } = cache[fileName];
+			let { map, fileSource } = cache[fileName] || {};
 			if (map == null) {
 				fileSource = await fetch(fileName).then(response => response.text());
 				map = await getSourceMap(fileName, fileSource);
@@ -18,7 +18,7 @@ const map = async (frames, fileUri, fileContents) => {
 				column: columnNumber
 			});
 
-			const originalSource = map.sourceContentFor(source)
+			const originalSource = source == null ? [] : map.sourceContentFor(source)
 
 			return new Frame(
 				functionName,
