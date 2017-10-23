@@ -2,6 +2,10 @@ import Frame from '../../frame/src/index';
 import getSourceMap from '../../utils/src/sourceMap';
 
 const unmap = async (frames, fileUri, fileContents) => {
+	if (fileContents == null) {
+		fileContents = await fetch(fileUri).then(response => response.text());
+	}
+	
 	const map = await getSourceMap(fileUri, fileContent);
 	return frames.map(frame => {
 		const { functionName, fileName, lineNumber, columnNumber } = frame;
