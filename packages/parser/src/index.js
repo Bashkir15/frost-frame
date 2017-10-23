@@ -1,7 +1,7 @@
 import Frame from '../../frame/src/index';
 
 const locExpression = /\(?(.+?)(?:\:(\d+))?(?:\:(\d+))?\)?$/;
-const chromeFrame = /^\s*at\s.+(:\d+)/;
+const chromeFrame = /^\s*(at|in)\s.+(:\d+)/;
 const firefoxFrame = /(^|@)\S+\:\d+|.+line\s+\d+\s+>\s+eval.+/;
 
 const extractLocation = token => locExpression.exec(token).slice(1).map(item => {
@@ -27,6 +27,9 @@ const parseStack = stack => {
 						/ line (\d+)(?: > eval line \d+)* > eval\:\d+\:\d+/g, ':$1'
 					);
 					isEval = true;
+				}
+				if (e.indexOf('(at ') !== -1) {
+					e = e.replace(/\(at /, '(');
 				}
 				const data = e.split(/[@]/g);
 				const last = data.pop();
