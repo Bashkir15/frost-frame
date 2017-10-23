@@ -42,7 +42,11 @@ class Frame {
 			prefix = `${this.filename}:`;
 		}
 
-		return `${prefix}${this.lineNumber}:${this.columnNumber}`;
+		let suffix = '';
+		if (this.columnNumber != null) {
+			suffix = `:${this.columnNumber}`;
+		}
+		return `${prefix}${this.lineNumber}${suffix}`;
 	}
 
 	toString() {
