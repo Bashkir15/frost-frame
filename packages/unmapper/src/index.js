@@ -1,5 +1,5 @@
 import Frame from '../../frame/src/index';
-import getSourceMap from '../../utils/src/sourceMap';
+import { getSourceMap, getLinesAround } from '../../utils/src/index';
 import path from 'path';
 
 const unmap = async (frames, fileUri, fileContents) => {
@@ -47,14 +47,18 @@ const unmap = async (frames, fileUri, fileContents) => {
 			column: columnNumber
 		});
 
+		const originalSource = map.sourceContentFor(source[0]);
 		return new Frame(
 			functionName,
 			fileUri,
 			line,
 			column || null,
-			undefined,
+			getLinesAround(line, 3, fileContents),
 			functionName,
-			fileName
+			fileName,
+			lineNumber,
+			columnNumber,
+			getLinesAround(lineNumber, 3, originalSource)
 		);
 
 	});
