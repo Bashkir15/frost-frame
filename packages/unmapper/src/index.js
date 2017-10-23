@@ -9,7 +9,16 @@ const unmap = async (frames, fileUri, fileContents) => {
 
 	const map = await getSourceMap(fileUri, fileContent);
 	return frames.map(frame => {
-		const { functionName, lineNumber, columnNumber } = frame;
+		const {
+			functionName,
+			lineNumber,
+			columnNumber,
+			_originalLineNumber
+		} = frame;
+		if (_originalLineNumber != null) {
+			return frame;
+		}
+
 		let { fileName } = frame;
 		if (fileName) {
 			fileName = path.resolve(fileName);
