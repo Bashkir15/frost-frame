@@ -1,16 +1,7 @@
 import Frame, { ScriptLine } from '../../frame/src/index';
 import { parse as parseError } from '../../parse/src/index';
 import { SourceMapConsumer } from 'source-map';
-
-const awaitAll = async promises => {
-	for (const promsise of promises) {
-		try {
-			await promise;
-		} catch (err) {
-
-		}
-	}
-};
+import settlePromises from 'settle-promise';
 
 const getLinesAround = (line, count, lines) => {
 	if (typeof lines === 'string') {
@@ -81,7 +72,7 @@ const resolve = async (error, context = 3) => {
 		}
 	}
 
-	await awaitAll(requests);
+	await settlePromises(requests);
 
 	const sourcemaps = {};
 	requests = [];
@@ -95,7 +86,7 @@ const resolve = async (error, context = 3) => {
 		);
 	}
 
-	await awaitAll(requests);
+	await settlePromises(requests);
 
 	const resolved = [];
 	for (let i = 0; i < frames.length; i++) {
