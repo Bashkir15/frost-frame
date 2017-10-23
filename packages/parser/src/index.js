@@ -59,7 +59,17 @@ const parseError = error => {
 	if (error == null || typeof error.stack !== 'string') {
 		throw new Error('The error you provided does not contain a stack trace');
 	}
-	return parseStack(error.stack);
+	if (typeof error === 'string') {
+		return parseStack(error.split('\n'));
+	}
+	if (Array.isArray(error)) {
+		return parseStack(error);
+	}
+	if (typeof error.stack === 'string') {
+		return parseStack(error.stack.split('\n'));
+	}
+
+	throw new Error('The error provided does not contain a stack trace');
 }
 
 export { parseError as parse };
