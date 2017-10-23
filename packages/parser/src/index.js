@@ -4,7 +4,14 @@ const locExpression = /\(?(.+?)(?:\:(\d+))?(?:\:(\d+))?\)?$/;
 const chromeFrame = /^\s*at\s.+(:\d+)/;
 const firefoxFrame = /(^|@)\S+\:\d+/;
 
-const extractLocation = token => locExpression.exec(token).slice(1);
+const extractLocation = token => locExpression.exec(token).slice(1).map(item => {
+	const place = Number(item);
+	if (!isNaN(place)) {
+		return place;
+	}
+	return item;
+});
+
 const parseStack = stack => {
 	const frames = stack
 		.split('\n')
